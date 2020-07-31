@@ -4,6 +4,8 @@
 
 #ifndef BEZIER_BEZIERAPPROXIMATOR_H
 #define BEZIER_BEZIERAPPROXIMATOR_H
+#define list_pos std::vector<std::vector<double> >
+
 #include <Python.h>
 #include "Vector2.h"
 #include <iostream>
@@ -19,11 +21,11 @@ public:
     const float TOLERANCE = 0.5f;
     const float TOLERANCE_SQ = TOLERANCE * TOLERANCE;
 
-    BezierApproximator(std::vector<Vector2<double> > control_points, int count);
-    bool is_flat_enough(std::vector<Vector2<double> > control_points);
-    void subdivide(std::vector<Vector2<double> > controlPoints, std::vector<Vector2<double> > l, std::vector<Vector2<double> > r);
-    void approximate(std::vector<Vector2<double> > control_points, PyObject *output);
-    void create_bezier(PyObject *output);
+    explicit BezierApproximator(std::vector<Vector2<double> > &control_points);
+    bool is_flat_enough(std::vector<Vector2<double> > &control_points);
+    void subdivide(std::vector<Vector2<double> > &controlPoints, std::vector<Vector2<double> > &l, std::vector<Vector2<double> > &r);
+    void approximate(std::vector<Vector2<double> > &control_points, list_pos &output);
+    list_pos create_bezier();
 };
 
 

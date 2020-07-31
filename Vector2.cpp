@@ -66,9 +66,8 @@ Vector2<T>& Vector2<T>::operator=(const Vector2<T> &v) {
 }
 
 template<class T>
-void Vector2<T>::add_to_output(PyObject *output) {
-    PyList_Append(output, PyFloat_FromDouble(this->x));
-    PyList_Append(output, PyFloat_FromDouble(this->y));
+void Vector2<T>::add_to_output(list_pos &output) {
+    output.push_back(std::vector<double> {this->x, this->y});
 }
 
 template<class T>
@@ -76,6 +75,4 @@ Vector2<T> Vector2<T>::operator/(const float n) {
     return Vector2<T>(T(this->x / n), T(this->y / n));
 }
 
-//template class Vector2<double>;
-//template class Vector2<double>;
 template class Vector2<double>;

@@ -5,16 +5,16 @@
 #include "BezierApproximator.h"
 
 
-BezierApproximator::BezierApproximator(std::vector<Vector2<double> > control_points, int count) {
+BezierApproximator::BezierApproximator(std::vector<Vector2<double> > &control_points) {
     this->control_points = control_points;
+    this->count = control_points.size();
     this->subdivision_buffer1.resize(count);
     this->subdivision_buffer2.resize(count * 2 - 1);
-    this->count = count;
 }
 
 
 
-bool BezierApproximator::is_flat_enough(std::vector<Vector2<double> > control_points) {
+bool BezierApproximator::is_flat_enough(std::vector<Vector2<double> > &control_points) {
 	for (int i = 1; i < control_points.size() - 1; i++)
 		if ((control_points[i - 1] - control_points[i] * 2 + control_points[i + 1]).length_squared() > TOLERANCE_SQ)
 			return false;
@@ -22,7 +22,7 @@ bool BezierApproximator::is_flat_enough(std::vector<Vector2<double> > control_po
 	return true;
 }
 
-void BezierApproximator::subdivide(std::vector<Vector2<double> > control_points, std::vector<Vector2<double> > l, std::vector<Vector2<double> > r) {
+void BezierApproximator::subdivide(std::vector<Vector2<double> > &control_points, std::vector<Vector2<double> > &l, std::vector<Vector2<double> > &r) {
     std::vector<Vector2<double> > midpoints(this->count);
 
     for (int i = 0; i < count; i++)
@@ -38,7 +38,7 @@ void BezierApproximator::subdivide(std::vector<Vector2<double> > control_points,
     }
 }
 
-void BezierApproximator::approximate(std::vector<Vector2<double> > control_points, PyObject *output) {
+void BezierApproximator::approximate(std::vector<Vector2<double> > &control_points, list_pos &output) {
     std::vector<Vector2<double> >l(this->count * 2 -1);
     std::vector<Vector2<double> > r(this->count);
 
@@ -56,14 +56,15 @@ void BezierApproximator::approximate(std::vector<Vector2<double> > control_point
     }
 }
 
-void BezierApproximator::create_bezier(PyObject *output) {
-    if (count == 0)
-        return;
+list_pos BezierApproximator::create_bezier() {
+    list_pos output;
+    if (this->count == 0)
+        return output;
 
     std::vector<std::vector<Vector2<double> > > to_flatten;
     std::vector<std::vector<Vector2<double> > > free_buffers;
 
-    // "toFlatten" contains all the curves which are not yet approximated well enough.
+    // "to_flatten" contains all the curves which are not yet approximated well enough.
     // We use a stack to emulate recursion without the risk of running into a stack overflow.
     // (More specifically, we iteratively and adaptively refine our curve with a
     // <a href="https://en.wikipedia.org/wiki/Depth-first_search">Depth-first search</a>
@@ -101,10 +102,11 @@ void BezierApproximator::create_bezier(PyObject *output) {
         // We re-use the buffer of the parent for one of the children, so that we save one allocation per iteration.
         for (int i = 0; i < count; ++i)
             parent[i] = left_child[i];
-//        printf();
+
         to_flatten.push_back(right_child);
         to_flatten.push_back(parent);
     }
 
     control_points[count - 1].add_to_output(output);
+    return output;
 }

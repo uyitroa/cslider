@@ -4,7 +4,10 @@
 
 #ifndef BEZIER_VECTOR_H
 #define BEZIER_VECTOR_H
-#include <Python.h>
+#define list_pos std::vector<std::vector<double> >
+
+#include <iostream>
+#include <vector>
 
 template <class T>
 class Vector2 {
@@ -21,7 +24,7 @@ public:
     Vector2<T> operator*(const int n);
     Vector2<T> operator*(const float n);
     Vector2<T> operator/(const float n);
-    void add_to_output(PyObject *output);
+    void add_to_output(list_pos &output);
     Vector2<T>& operator=(const Vector2<T> &v);
     float length();
     float length_squared();
