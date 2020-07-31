@@ -67,7 +67,7 @@ Vector2<T>& Vector2<T>::operator=(const Vector2<T> &v) {
 
 template<class T>
 void Vector2<T>::add_to_output(list_pos &output) {
-    output.push_back(std::vector<double> {this->x, this->y});
+    output.push_back(std::vector<float> {this->x, this->y});
 }
 
 template<class T>
@@ -75,4 +75,9 @@ Vector2<T> Vector2<T>::operator/(const float n) {
     return Vector2<T>(T(this->x / n), T(this->y / n));
 }
 
-template class Vector2<double>;
+template<class T>
+float Vector2<T>::distance_from(const Vector2<T> &v) {
+    return sqrt(pow(this->x - v.x, 2) - pow(this->y - v.y, 2));
+}
+
+template class Vector2<float>;

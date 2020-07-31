@@ -4,7 +4,7 @@
 
 #ifndef BEZIER_VECTOR_H
 #define BEZIER_VECTOR_H
-#define list_pos std::vector<std::vector<double> >
+#define list_pos std::vector<std::vector<float> >
 
 #include <iostream>
 #include <vector>
@@ -28,6 +28,7 @@ public:
     Vector2<T>& operator=(const Vector2<T> &v);
     float length();
     float length_squared();
+    float distance_from(const Vector2<T> &v);
 };
 
 

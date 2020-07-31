@@ -5,7 +5,7 @@
 #include "BezierApproximator.h"
 
 
-BezierApproximator::BezierApproximator(std::vector<Vector2<double> > &control_points) {
+BezierApproximator::BezierApproximator(std::vector<Vector2<float> > &control_points) {
     this->control_points = control_points;
     this->count = control_points.size();
     this->subdivision_buffer1.resize(count);
@@ -14,16 +14,16 @@ BezierApproximator::BezierApproximator(std::vector<Vector2<double> > &control_po
 
 
 
-bool BezierApproximator::is_flat_enough(std::vector<Vector2<double> > &control_points) {
+bool BezierApproximator::is_flat_enough(std::vector<Vector2<float> > &control_points) {
 	for (int i = 1; i < control_points.size() - 1; i++)
-		if ((control_points[i - 1] - control_points[i] * 2 + control_points[i + 1]).length_squared() > TOLERANCE_SQ)
+		if ((control_points[i - 1] - control_points[i] * 2 + control_points[i + 1]).length_squared() > this->TOLERANCE_SQ)
 			return false;
 
 	return true;
 }
 
-void BezierApproximator::subdivide(std::vector<Vector2<double> > &control_points, std::vector<Vector2<double> > &l, std::vector<Vector2<double> > &r) {
-    std::vector<Vector2<double> > midpoints(this->count);
+void BezierApproximator::subdivide(std::vector<Vector2<float> > &control_points, std::vector<Vector2<float> > &l, std::vector<Vector2<float> > &r) {
+    std::vector<Vector2<float> > midpoints(this->count);
 
     for (int i = 0; i < count; i++)
         midpoints[i] = control_points[i];
@@ -38,9 +38,9 @@ void BezierApproximator::subdivide(std::vector<Vector2<double> > &control_points
     }
 }
 
-void BezierApproximator::approximate(std::vector<Vector2<double> > &control_points, list_pos &output) {
-    std::vector<Vector2<double> >l(this->count * 2 -1);
-    std::vector<Vector2<double> > r(this->count);
+void BezierApproximator::approximate(std::vector<Vector2<float> > &control_points, list_pos &output) {
+    std::vector<Vector2<float> >l(this->count * 2 -1);
+    std::vector<Vector2<float> > r(this->count);
 
     this->subdivide(control_points, l, r);
 
@@ -51,7 +51,7 @@ void BezierApproximator::approximate(std::vector<Vector2<double> > &control_poin
     for (int i = 1; i < count - 1; ++i)
     {
         int index = 2 * i;
-        Vector2<double> p =(l[index] * 2 + l[index - 1] + l[index + 1]) * 0.25f;
+        Vector2<float> p =(l[index] * 2 + l[index - 1] + l[index + 1]) * 0.25f;
         p.add_to_output(output);
     }
 }
@@ -61,8 +61,8 @@ list_pos BezierApproximator::create_bezier() {
     if (this->count == 0)
         return output;
 
-    std::vector<std::vector<Vector2<double> > > to_flatten;
-    std::vector<std::vector<Vector2<double> > > free_buffers;
+    std::vector<std::vector<Vector2<float> > > to_flatten;
+    std::vector<std::vector<Vector2<float> > > free_buffers;
 
     // "to_flatten" contains all the curves which are not yet approximated well enough.
     // We use a stack to emulate recursion without the risk of running into a stack overflow.
@@ -71,11 +71,11 @@ list_pos BezierApproximator::create_bezier() {
     // over the tree resulting from the subdivisions we make.)
     to_flatten.push_back(control_points);
 
-    std::vector<Vector2<double> > left_child = this->subdivision_buffer2;
+    std::vector<Vector2<float> > left_child = this->subdivision_buffer2;
 
     while (!to_flatten.empty())
     {
-        std::vector<Vector2<double> > parent = to_flatten.back();
+        std::vector<Vector2<float> > parent = to_flatten.back();
         to_flatten.pop_back();
         if (this->is_flat_enough(parent))
         {
@@ -90,7 +90,7 @@ list_pos BezierApproximator::create_bezier() {
 
         // If we do not yet have a sufficiently "flat" (in other words, detailed) approximation we keep
         // subdividing the curve we are currently operating on.
-        std::vector<Vector2<double> > right_child;
+        std::vector<Vector2<float> > right_child;
         if (!free_buffers.empty()) {
             right_child = free_buffers.back();
             free_buffers.pop_back();
@@ -109,4 +109,8 @@ list_pos BezierApproximator::create_bezier() {
 
     control_points[count - 1].add_to_output(output);
     return output;
+}
+
+list_pos BezierApproximator::create() {
+    return create_bezier();
 }
