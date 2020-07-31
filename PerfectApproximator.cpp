@@ -7,7 +7,7 @@
 #include <cmath>
 #include "PerfectApproximator.h"
 
-PerfectApproximator::PerfectApproximator(std::vector<Vector2<float> > &control_points) {
+PerfectApproximator::PerfectApproximator(list_vector &control_points) {
     this->control_points = control_points;
 }
 
