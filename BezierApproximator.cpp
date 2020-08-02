@@ -4,6 +4,8 @@
 
 #include <vector>
 #include "Vector2.h"
+#include "LinearApproximator.h"
+
 #define list_vector std::vector<Vector2<float> >
 
 
@@ -19,7 +21,7 @@ void subdivide(list_vector &control_points, list_vector &l, list_vector &r) {
     int count = control_points.size();
     list_vector midpoints(count);
 
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; ++i)
         midpoints[i] = control_points[i];
 
     for (int i = 0; i < count; i++)
@@ -43,21 +45,20 @@ void approximate(list_vector &control_points, list_pos &output) {
         l[count + i] = r[i + 1];
 
     control_points[0].add_to_output(output);
-    for (int i = 1; i < count - 1; ++i)
-    {
+    for (int i = 1; i < count - 1; ++i) {
         int index = 2 * i;
         Vector2<float> p =(l[index] * 2 + l[index - 1] + l[index + 1]) * 0.25f;
         p.add_to_output(output);
     }
 }
 
-void create_bezier(list_pos &output, list_vector &control_points) {
+void create_singlebezier(list_pos &output, list_vector &control_points) {
     int count = control_points.size();
     const float TOLERANCE = 0.5f;
     const float TOLERANCE_SQ = TOLERANCE * TOLERANCE;
     list_vector subdivision_buffer1(count);
     list_vector subdivision_buffer2(count * 2 - 1);
-    
+
     if (count == 0)
         return;
 
@@ -108,4 +109,21 @@ void create_bezier(list_pos &output, list_vector &control_points) {
     }
 
     control_points[count - 1].add_to_output(output);
+}
+
+void create_bezier(list_pos &output, list_vector &control_points) {
+    int last_index = 0;
+    for(int i = 0; i < control_points.size(); i++) {
+        bool multipart_segment = i < control_points.size() - 2 && (control_points[i] == control_points[i + 1]);
+        if(multipart_segment || i == control_points.size() - 1) {
+            list_vector sub = list_vector(control_points.begin() + last_index, control_points.begin() + i + 1);
+            if (sub.size() == 2) {
+                create_linear(output, sub);
+            } else {
+                create_singlebezier(output, sub);
+            }
+            if(multipart_segment) i++;
+            last_index = i;
+        }
+    }
 }

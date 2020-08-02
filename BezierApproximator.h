@@ -11,9 +11,10 @@
 #define list_vector std::vector<Vector2<float> >
 
 
-bool is_flat_enough(list_vector &control_points, int tolerance_sq);
-void subdivide(list_vector &controlPoints, list_vector &l, list_vector &r);
+bool is_flat_enough(list_vector &control_points, float tolerance_sq);
+void subdivide(list_vector &control_points, list_vector &l, list_vector &r);
 void approximate(list_vector &control_points, list_pos &output);
+void create_singlebezier(list_pos &output, list_vector &control_points);
 void create_bezier(list_pos &output, list_vector &control_points);
 
 

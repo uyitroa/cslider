@@ -24,6 +24,8 @@ public:
     Vector2<T> operator*(const int n);
     Vector2<T> operator*(const float n);
     Vector2<T> operator/(const float n);
+    bool operator!=(const Vector2<T> &v);
+    bool operator==(const Vector2<T> &v);
     void add_to_output(list_pos &output);
     Vector2<T>& operator=(const Vector2<T> &v);
     float length();

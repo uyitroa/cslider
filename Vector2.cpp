@@ -77,7 +77,17 @@ Vector2<T> Vector2<T>::operator/(const float n) {
 
 template<class T>
 float Vector2<T>::distance_from(const Vector2<T> &v) {
-    return sqrt(pow(this->x - v.x, 2) - pow(this->y - v.y, 2));
+    return sqrt(pow(this->x - v.x, 2) + pow(this->y - v.y, 2));
+}
+
+template<class T>
+bool Vector2<T>::operator!=(const Vector2<T> &v) {
+    return (this->x != v.x) || (this->y != v.y);
+}
+
+template<class T>
+bool Vector2<T>::operator==(const Vector2<T> &v) {
+    return (this->x == v.x) && (this->y == v.y);
 }
 
 template class Vector2<float>;
