@@ -1,7 +1,3 @@
-//
-// Created by yuitora . on 31/07/2020.
-//
-
 #include "Vector2.h"
 #include <cmath>
 
@@ -67,6 +63,9 @@ Vector2<T>& Vector2<T>::operator=(const Vector2<T> &v) {
 
 template<class T>
 void Vector2<T>::add_to_output(list_pos &output) {
+//    if (output.size() > 0)
+//        if(output[output.size() - 1][0] == this->x && output[output.size() - 1][1] == this->y)
+//            return;
     output.push_back(std::vector<float> {this->x, this->y});
 }
 
